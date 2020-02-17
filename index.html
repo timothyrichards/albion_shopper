@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Albion Shopper</title>
+
+    <!--  jQuery  -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!--  Other  -->
+    <script type="text/javascript" src="js/main.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="controls">
+    <div class="controlgroup">
+        <select id="tier">
+            <option value="T8">T8</option>
+            <option value="T7">T7</option>
+            <option value="T6">T6</option>
+            <option value="T5">T5</option>
+            <option value="T4">T4</option>
+            <option value="T3">T3</option>
+            <option value="T2">T2</option>
+            <option value="T1">T1</option>
+        </select>
+        <select id="item">
+            <option value="All">All</option>
+            <option value="ARMOR_CLOTH_SET1">Scholar Robe</option>
+            <option value="ARMOR_CLOTH_SET2">Cleric Robe</option>
+            <option value="ARMOR_CLOTH_SET3">Mage Robe</option>
+            <option value="HEAD_CLOTH_SET1">Scholar Cowl</option>
+            <option value="HEAD_CLOTH_SET2">Cleric Cowl</option>
+            <option value="HEAD_CLOTH_SET3">Mage Cowl</option>
+            <option value="SHOES_CLOTH_SET1">Scholar Sandals</option>
+            <option value="SHOES_CLOTH_SET2">Cleric Sandals</option>
+            <option value="SHOES_CLOTH_SET3">Mage Sandals</option>
+            <option value="ARMOR_LEATHER_SET1">Mercenary Jacket</option>
+            <option value="ARMOR_LEATHER_SET2">Hunter Jacket</option>
+            <option value="ARMOR_LEATHER_SET3">Assassin Jacket</option>
+            <option value="HEAD_LEATHER_SET1">Mercenary Hood</option>
+            <option value="HEAD_LEATHER_SET2">Hunter Hood</option>
+            <option value="HEAD_LEATHER_SET3">Assassin Hood</option>
+            <option value="SHOES_LEATHER_SET1">Mercenary Shoes</option>
+            <option value="SHOES_LEATHER_SET2">Hunter Shoes</option>
+            <option value="SHOES_LEATHER_SET3">Assassin Shoes</option>
+            <option value="ARMOR_PLATE_SET1">Soldier Armor</option>
+            <option value="ARMOR_PLATE_SET2">Knight Armor</option>
+            <option value="ARMOR_PLATE_SET3">Guardian Armor</option>
+            <option value="HEAD_PLATE_SET1">Soldier Helmet</option>
+            <option value="HEAD_PLATE_SET2">Knight Helmet</option>
+            <option value="HEAD_PLATE_SET3">Guardian Helmet</option>
+            <option value="SHOES_PLATE_SET1">Soldier Boots</option>
+            <option value="SHOES_PLATE_SET2">Knight Boots</option>
+            <option value="SHOES_PLATE_SET3">Guardian Boots</option>
+        </select>
+        <select id="enchant">
+            <option value="">Enchantment 0</option>
+            <option value="@1">Enchantment 1</option>
+            <option value="@2">Enchantment 2</option>
+            <option value="@3">Enchantment 3</option>
+        </select>
+        <select id="quality">
+            <option value="1">Normal</option>
+            <option value="2">Good</option>
+            <option value="3">Outstanding</option>
+            <option value="4">Excellent</option>
+            <option value="5">Masterpiece</option>
+        </select>
+        <button id="submit">Submit</button>
+    </div>
+</div>
+<div id="loading">
+    <img alt="loading" src="https://i.ya-webdesign.com/images/minimalist-transparent-loading-gif-9.gif">
+</div>
+<div id="wrapper"></div>
+</body>
+</html>

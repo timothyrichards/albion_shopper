@@ -1,0 +1,29 @@
+#controls {
+    display: flex;
+    justify-content: center;
+}
+#loading {
+    display: flex;
+    justify-content: center;
+}
+#wrapper {
+    display: flex;
+    justify-content: center;
+}
+#wrapper > div {
+    padding: 10px;
+    text-align: center;
+}
+.card {
+    height: 150px;
+    min-width: 200px;
+    margin: 15px 0;
+    padding: 10px 0;
+    box-shadow: 0.3em 0.3em 1em rgba(0,0,0,0.3);
+}
+.card p {
+    padding: 5px;
+}
+.card p:nth-child(even) {
+    background: #CCC
+}
