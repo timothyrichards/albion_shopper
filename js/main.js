@@ -84,8 +84,12 @@ $(document).ready( function () {
                     results.push(data);
                     $.when(
                         $.each(data, function (key, value) {
+                            console.log(data);
                             let regex = /T*_(.*_.*_SET.)/g;
                             let match = regex.exec(value['item_id']);
+                            let options = {  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+                            let buy_date = new Date(value['buy_price_min_date']);
+                            let sell_date = new Date(value['sell_price_min_date']);
 
                             // Get list of items as cards
                             let html = "<div class='card'>";
@@ -93,11 +97,17 @@ $(document).ready( function () {
                             if (value['quality'] > 0)
                             {
                                 html += "<p>Item: "+tier+enchant+" "+$('option[value='+match[1]+']').html()+"</p>";
-                                if (container_id === "black-market")
-                                    html += "<p><b>Price: "+value['buy_price_min'].toLocaleString()+"</b></p>";
-                                else
-                                    html += "<p><b>Price: "+value['sell_price_min'].toLocaleString()+"</b></p>";
                                 html += "<p>Quality: "+$('option[value='+value['quality']+']').html()+"</p>";
+                                if (container_id === "black-market")
+                                {
+                                    html += "<p><b>Price: "+value['buy_price_min'].toLocaleString()+"</b></p>";
+                                    html += "<p>Updated: "+buy_date.toLocaleTimeString('en-us', options)+"</p>";
+                                }
+                                else
+                                {
+                                    html += "<p><b>Price: "+value['sell_price_min'].toLocaleString()+"</b></p>";
+                                    html += "<p>Updated: "+sell_date.toLocaleTimeString('en-us', options)+"</p>";
+                                }
                             }
                             else
                                 html += "<p>No results found.</p>";
