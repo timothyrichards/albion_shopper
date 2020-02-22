@@ -5,11 +5,11 @@ let url = "https://www.albion-online-data.com/api/v2/stats/Prices/";
 let locations = [
     'Black Market',
     'Caerleon',
-    // 'Thetford',
-    // 'Fort Sterling',
-    // 'Lymhurst',
-    // 'Bridgewatch',
-    // 'Martlock'
+    'Thetford',
+    'Fort Sterling',
+    'Lymhurst',
+    'Bridgewatch',
+    'Martlock'
 ];
 let items;
 
@@ -84,7 +84,6 @@ $(document).ready( function () {
                     results.push(data);
                     $.when(
                         $.each(data, function (key, value) {
-                            console.log(data);
                             let regex = /T*_(.*_.*_SET.)/g;
                             let match = regex.exec(value['item_id']);
                             let options = {  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
