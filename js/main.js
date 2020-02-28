@@ -1,5 +1,3 @@
-// Item ID's: https://github.com/broderickhyman/ao-bin-dumps/blob/master/formatted/items.txt
-
 // API Data
 let prices = "https://www.albion-online-data.com/api/v2/stats/Prices/";
 let charts = "https://www.albion-online-data.com/api/v2/stats/Charts/";
@@ -14,11 +12,7 @@ let locations = [
 ];
 let items;
 let chart_data = [['Time', 'Price']];
-
-//     ["2020-01-29T12:00:00",  279000],
-//     ["2020-01-31T06:00:00",  275000],
-//     ["2020-01-31T12:00:00",  299000],
-//     ["2020-01-31T18:00:00",  267899]
+let timestamp_options = {  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
 
 // Filters
 let tier;
@@ -52,12 +46,13 @@ function buildURL(url, items, enchant, quality, location) {
     return encodeURI(ajax_url);
 }
 
+// Builds the historical data chart
 function drawChart() {
     let data = google.visualization.arrayToDataTable(chart_data);
 
     let options = {
         title: 'Average Price History',
-        hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+        hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
         vAxis: {minValue: 0}
     };
 
@@ -65,6 +60,7 @@ function drawChart() {
     chart.draw(data, options);
 }
 
+// Initialization
 $(document).ready( function () {
     // Set up filter input control group
     $('.controlgroup').controlgroup();
@@ -76,11 +72,15 @@ $(document).ready( function () {
         width: 'auto'
     });
 
+    // Item ID's: https://github.com/broderickhyman/ao-bin-dumps/blob/master/formatted/items.txt
     // Get list of all items
     // $.getJSON('https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json', function(data) {
     //     items = data;
     // });
-}).on('click', '#submit', function () {
+});
+
+// On submit button click
+$(document).on('click', '#submit', function () {
     // Update filters from inputs
     tier = $('#tier').val();
     item = $('#item').val();
@@ -98,7 +98,6 @@ $(document).ready( function () {
     $('#wrapper').empty().hide();
 
     // Get the new results
-    let results = [];
     $.when(
         $.each(locations, function (key, value) {
             let container_id = value.replace(/\s+/g, '-').toLowerCase();
@@ -107,41 +106,33 @@ $(document).ready( function () {
             // Create container for items list
             html = "<div id='"+container_id+"'>";
             html += "<h1>"+value+"</h1>";
-
             $.ajax({
                 url: buildURL(prices, item, enchant, quality, value),
                 success: function (data) {
-                    results.push(data);
                     $.when(
                         $.each(data, function (key, value) {
                             let regex = /T*_(.*_.*_SET.)/g;
                             let match = regex.exec(value['item_id']);
-                            let options = {  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
                             let buy_date = new Date(value['buy_price_min_date']);
                             let sell_date = new Date(value['sell_price_min_date']);
 
                             // Get list of items as cards
                             let html = "<div class='card' data-item-name='"+value["item_id"]+"' data-item-enchant='"+enchant+"' data-item-quality='"+value["quality"]+"' data-item-location='"+locations+"'>";
-
                             if (value['quality'] > 0)
                             {
+                                let price = container_id === "black-market" ? value['buy_price_min'].toLocaleString() : value['sell_price_min'].toLocaleString();
+                                let date = container_id === "black-market" ? buy_date.toLocaleTimeString('en-us', timestamp_options) : sell_date.toLocaleTimeString('en-us', timestamp_options);
+
                                 html += "<p>Item: "+tier+enchant+" "+$('option[value='+match[1]+']').html()+"</p>";
                                 html += "<p>Quality: "+$('option[value='+value['quality']+']').html()+"</p>";
-                                if (container_id === "black-market")
-                                {
-                                    html += "<p><b>Price: "+value['buy_price_min'].toLocaleString()+"</b></p>";
-                                    html += "<p>"+buy_date.toLocaleTimeString('en-us', options)+"</p>";
-                                }
-                                else
-                                {
-                                    html += "<p><b>Price: "+value['sell_price_min'].toLocaleString()+"</b></p>";
-                                    html += "<p>"+sell_date.toLocaleTimeString('en-us', options)+"</p>";
-                                }
+                                html += "<p><b>Price: "+price.toLocaleString()+"</b></p>";
+                                html += "<p>"+date+"</p>";
                             }
                             else
                                 html += "<p>No results found.</p>";
-
                             html += "</div>";
+
+                            // Append cards to their container
                             $(html).appendTo($("#"+container_id+""))
                         })
                     ).then(function () {
@@ -150,14 +141,16 @@ $(document).ready( function () {
                     });
                 }
             });
-
             html += "</div>";
+
+            // Append html to the page
             $(html).appendTo($('#wrapper'));
         })
-    ).then(function () {
-        // console.log(results);
-    });
-}).on('click', '.card', function () {
+    );
+});
+
+// On card click
+$(document).on('click', '.card', function () {
     let data_item_name = $(this).attr('data-item-name');
     let data_item_enchant = $(this).attr('data-item-enchant');
     let data_item_quality = $(this).attr('data-item-quality');
@@ -166,12 +159,18 @@ $(document).ready( function () {
     $.ajax({
         url: buildURL(charts, data_item_name, data_item_enchant, data_item_quality, data_item_location),
         success: function (data) {
+            // Get historical data for the chart
             let price_data = data[0].data;
             $.each(price_data.timestamps, function (key, value) {
-                chart_data.push([value, price_data.prices_avg[key]]);
+                let date = new Date(value);
+                chart_data.push([date.toLocaleTimeString('en-us', timestamp_options), price_data.prices_avg[key]]);
             });
+
+            // Populate chart
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
+
+            // Open and recenter dialog
             $('#dialog').dialog('open');
             $("#dialog").dialog("option", "position", {my: "center", at: "center", of: window});
         }
