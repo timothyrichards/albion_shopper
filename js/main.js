@@ -64,7 +64,11 @@ function drawChart() {
 $(document).ready( function () {
     // Set up filter input control group
     $('.controlgroup').controlgroup();
+
+    // Hide loading gif by default
     $('#loading').hide();
+
+    // Initialize dialog
     $('#dialog').dialog({
         autoOpen: false,
         modal: true,
@@ -77,6 +81,11 @@ $(document).ready( function () {
     // $.getJSON('https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json', function(data) {
     //     items = data;
     // });
+});
+
+// Bind click to close dialog
+$(document).on('click', '.ui-widget-overlay', function () {
+    $("#dialog").dialog('close');
 });
 
 // On submit button click
