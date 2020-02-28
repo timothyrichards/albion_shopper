@@ -13,6 +13,9 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
+    <!--  Google Charts  -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
     <!--  Other  -->
     <script type="text/javascript" src="js/main.js"></script>
     <link rel="stylesheet" href="css/style.css">
@@ -67,6 +70,7 @@
             <option value="@3">Enchantment 3</option>
         </select>
         <select id="quality">
+            <option value="0">All</option>
             <option value="1">Normal</option>
             <option value="2">Good</option>
             <option value="3">Outstanding</option>
@@ -80,5 +84,8 @@
     <img alt="loading" src="https://i.ya-webdesign.com/images/minimalist-transparent-loading-gif-9.gif">
 </div>
 <div id="wrapper"></div>
+<div id="dialog" title="Historical Data">
+    <div id="chart_div" style="width: 750px; height: 500px;"></div>
+</div>
 </body>
 </html>

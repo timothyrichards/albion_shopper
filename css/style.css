@@ -32,6 +32,7 @@ h1 {
     margin: 15px 0;
     padding: 10px 0;
     box-shadow: 0.3em 0.3em 1em rgba(0,0,0,0.3);
+    cursor: pointer;
 }
 .card p {
     padding: 5px;

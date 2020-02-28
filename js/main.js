@@ -1,7 +1,8 @@
 // Item ID's: https://github.com/broderickhyman/ao-bin-dumps/blob/master/formatted/items.txt
 
 // API Data
-let url = "https://www.albion-online-data.com/api/v2/stats/Prices/";
+let prices = "https://www.albion-online-data.com/api/v2/stats/Prices/";
+let charts = "https://www.albion-online-data.com/api/v2/stats/Charts/";
 let locations = [
     'Black Market',
     'Caerleon',
@@ -12,6 +13,12 @@ let locations = [
     'Martlock'
 ];
 let items;
+let chart_data = [['Time', 'Price']];
+
+//     ["2020-01-29T12:00:00",  279000],
+//     ["2020-01-31T06:00:00",  275000],
+//     ["2020-01-31T12:00:00",  299000],
+//     ["2020-01-31T18:00:00",  267899]
 
 // Filters
 let tier;
@@ -37,14 +44,37 @@ function itemList(armor_type) {
 }
 
 // Build ajax call URL
-function buildURL(items, enchant, quality, location) {
-    return encodeURI(url+items+enchant+'?locations='+location+'&qualities='+quality);
+function buildURL(url, items, enchant, quality, location) {
+    let ajax_url =  url+items+enchant+'?locations='+location;
+    if (quality !== 0)
+        ajax_url += '&qualities='+quality;
+
+    return encodeURI(ajax_url);
+}
+
+function drawChart() {
+    let data = google.visualization.arrayToDataTable(chart_data);
+
+    let options = {
+        title: 'Average Price History',
+        hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+        vAxis: {minValue: 0}
+    };
+
+    let chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
 }
 
 $(document).ready( function () {
     // Set up filter input control group
     $('.controlgroup').controlgroup();
     $('#loading').hide();
+    $('#dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 'auto'
+    });
 
     // Get list of all items
     // $.getJSON('https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json', function(data) {
@@ -79,7 +109,7 @@ $(document).ready( function () {
             html += "<h1>"+value+"</h1>";
 
             $.ajax({
-                url: buildURL(item, enchant, quality, value),
+                url: buildURL(prices, item, enchant, quality, value),
                 success: function (data) {
                     results.push(data);
                     $.when(
@@ -91,7 +121,7 @@ $(document).ready( function () {
                             let sell_date = new Date(value['sell_price_min_date']);
 
                             // Get list of items as cards
-                            let html = "<div class='card'>";
+                            let html = "<div class='card' data-item-name='"+value["item_id"]+"' data-item-enchant='"+enchant+"' data-item-quality='"+value["quality"]+"' data-item-location='"+locations+"'>";
 
                             if (value['quality'] > 0)
                             {
@@ -100,12 +130,12 @@ $(document).ready( function () {
                                 if (container_id === "black-market")
                                 {
                                     html += "<p><b>Price: "+value['buy_price_min'].toLocaleString()+"</b></p>";
-                                    html += "<p>Updated: "+buy_date.toLocaleTimeString('en-us', options)+"</p>";
+                                    html += "<p>"+buy_date.toLocaleTimeString('en-us', options)+"</p>";
                                 }
                                 else
                                 {
                                     html += "<p><b>Price: "+value['sell_price_min'].toLocaleString()+"</b></p>";
-                                    html += "<p>Updated: "+sell_date.toLocaleTimeString('en-us', options)+"</p>";
+                                    html += "<p>"+sell_date.toLocaleTimeString('en-us', options)+"</p>";
                                 }
                             }
                             else
@@ -125,6 +155,25 @@ $(document).ready( function () {
             $(html).appendTo($('#wrapper'));
         })
     ).then(function () {
-        console.log(results);
+        // console.log(results);
+    });
+}).on('click', '.card', function () {
+    let data_item_name = $(this).attr('data-item-name');
+    let data_item_enchant = $(this).attr('data-item-enchant');
+    let data_item_quality = $(this).attr('data-item-quality');
+    let data_item_location = $(this).attr('data-item-location');
+
+    $.ajax({
+        url: buildURL(charts, data_item_name, data_item_enchant, data_item_quality, data_item_location),
+        success: function (data) {
+            let price_data = data[0].data;
+            $.each(price_data.timestamps, function (key, value) {
+                chart_data.push([value, price_data.prices_avg[key]]);
+            });
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+            $('#dialog').dialog('open');
+            $("#dialog").dialog("option", "position", {my: "center", at: "center", of: window});
+        }
     });
 });
