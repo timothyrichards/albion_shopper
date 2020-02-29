@@ -11,7 +11,7 @@ let locations = [
     'Martlock'
 ];
 let items;
-let chart_data = [['Time', 'Price']];
+let chart_data;
 let timestamp_options = {  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
 
 // Filters
@@ -42,7 +42,6 @@ function buildURL(url, items, enchant, quality, location) {
     let ajax_url =  url+items+enchant+'?locations='+location;
     if (quality !== 0)
         ajax_url += '&qualities='+quality;
-
     return encodeURI(ajax_url);
 }
 
@@ -108,15 +107,15 @@ $(document).on('click', '#submit', function () {
 
     // Get the new results
     $.when(
-        $.each(locations, function (key, value) {
-            let container_id = value.replace(/\s+/g, '-').toLowerCase();
+        $.each(locations, function (key, location) {
+            let container_id = location.replace(/\s+/g, '-').toLowerCase();
             let html;
 
             // Create container for items list
             html = "<div id='"+container_id+"'>";
-            html += "<h1>"+value+"</h1>";
+            html += "<h1>"+location+"</h1>";
             $.ajax({
-                url: buildURL(prices, item, enchant, quality, value),
+                url: buildURL(prices, item, enchant, quality, location),
                 success: function (data) {
                     $.when(
                         $.each(data, function (key, value) {
@@ -126,7 +125,7 @@ $(document).on('click', '#submit', function () {
                             let sell_date = new Date(value['sell_price_min_date']);
 
                             // Get list of items as cards
-                            let html = "<div class='card' data-item-name='"+value["item_id"]+"' data-item-enchant='"+enchant+"' data-item-quality='"+value["quality"]+"' data-item-location='"+locations+"'>";
+                            let html = "<div class='card' data-item-name='"+value["item_id"]+"' data-item-enchant='"+enchant+"' data-item-quality='"+value["quality"]+"' data-item-location='"+location+"'>";
                             if (value['quality'] > 0)
                             {
                                 let price = container_id === "black-market" ? value['buy_price_min'].toLocaleString() : value['sell_price_min'].toLocaleString();
@@ -170,6 +169,7 @@ $(document).on('click', '.card', function () {
         success: function (data) {
             // Get historical data for the chart
             let price_data = data[0].data;
+            chart_data = [['Time', 'Price']];
             $.each(price_data.timestamps, function (key, value) {
                 let date = new Date(value);
                 chart_data.push([date.toLocaleTimeString('en-us', timestamp_options), price_data.prices_avg[key]]);
@@ -180,7 +180,7 @@ $(document).on('click', '.card', function () {
             google.charts.setOnLoadCallback(drawChart);
 
             // Open and recenter dialog
-            $('#dialog').dialog('open');
+            $("#dialog").dialog('open');
             $("#dialog").dialog("option", "position", {my: "center", at: "center", of: window});
         }
     });
